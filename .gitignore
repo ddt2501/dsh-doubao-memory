@@ -1,0 +1,35 @@
+# 运行时噪声
+# ⚠️ **必须用 `node_modules/*` 而不是 `node_modules/`**——
+#    git 不会进被排除的目录，所以写成 `node_modules/` 时，
+#    下面的 `!` 反规则对里面的文件**完全无效**。
+node_modules/*
+# …但**这几个 vendor 依赖要进 git**（见 RUNTIME/scripts/vendor-deps.ps1 的说明）：
+# 插件是以 link: 方式装进 DSH profile 的，而 link: 装的包 **pnpm 不接管它自己的依赖**
+# ⇒ 依赖必须跟着包走，否则换台机器 clone 下来就是坏的。
+!node_modules/zod/
+!node_modules/@standard-schema/
+!node_modules/@standard-schema/spec/
+!node_modules/@deepseek-ai/
+node_modules/@deepseek-ai/*
+!node_modules/@deepseek-ai/schemastery/
+!node_modules/@deepseek-ai/cosmokit/
+*.log
+RUNTIME/manas-system/data/
+RUNTIME/manas-system/*.bak
+RUNTIME/_errors/
+*.tmp
+
+# 本地敏感
+*.key
+*.pem
+.env
+.env.*
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+# 自举时可能落在这里（默认实例目录的兜底位置）
+instance/
+
