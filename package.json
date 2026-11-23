@@ -1,0 +1,75 @@
+{
+  "name": "dsh-doubao-memory",
+  "version": "1.2.0",
+  "description": "人格记忆系统：双层记忆（SQLite 事实记忆 + wiki 人格抽象）+ 工具式按需召回 + Wiki 四相 + 末那识 + 主动搭讪 + 每轮住相（机制与人格数据分离）。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "persona",
+    "memory",
+    "llm-wiki",
+    "manas",
+    "snapshot",
+    "sqlite",
+    "fact-memory",
+    "forgetting-curve"
+  ],
+  "engines": {
+    "node": ">=22.19.0",
+    "dsh": ">=0.2.0-rc.2 <0.3.0"
+  },
+  "dependencies": {
+    "zod": "4.4.3"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-storage-domain": ">=0.2.2-rc.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/dsh-storage-domain": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-plugin-manager",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "files": [
+    "lib/",
+    "cordis.patch.yml",
+    "locale/",
+    "RUNTIME/prompts/",
+    "RUNTIME/manas-system/",
+    "RUNTIME/scripts/",
+    "templates/",
+    "docs/",
+    "README.md",
+    "README.en.md",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "file:///D:/dsh/packages/dsh-doubao-memory"
+  }
+}
