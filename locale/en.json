@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Persona Memory",
+    "description": "A reusable persona-memory engine for DSH: two-tier memory — SQLite stores facts/preferences/episodes with forgetting decay (gist/detail split saves tokens), and the wiki abstracts them into persona material; facts are recalled on demand via the recall_memory tool (independent of the snapshot, cross-session and long-term); a four-phase Wiki saves summaries, distills insights and ages the index in the background; proactive outreach and the per-turn snapshot are decided and generated inside the plugin; JitRL learns theme preferences from reactions. Memory lives only in your persona directory, never in the package. One snapshot model call per turn; phases run silently in a headless subprocess.",
+    "detail": "docs/DETAIL.md"
+  }
+}
