@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "3.0",
+  "owner": "{ASSISTANT}主对话 Session（绑当前会话 sessionId；启动后由 schedule_list 反馈填具体 id）",
+  "designDoc": "{DATA}\\DESIGN\\LLM_WIKI_DSH.md",
+  "phases": [
+    {
+      "id": "schedule-a1d4a12e-b69c-4ac6-b1a1-c4712001784a",
+      "title": "{ASSISTANT}·Daily Ingest",
+      "purpose": "每日 04:30 写昨日对话摘要到 RAW/conversations/",
+      "phase": "ingest",
+      "cron": "0 4 * * *",
+      "time_zone": "Asia/Shanghai",
+      "promptFile": "RUNTIME/prompts/ingest.md",
+      "writesTo": [
+        "{DATA}\\RAW\\conversations\\YYYY-MM-DD.md",
+        "{DATA}\\RUNTIME\\state\\last-ingest.json"
+      ],
+      "readsFrom": [
+        "{DATA}\\RAW\\conversations\\（最近 7 天）"
+      ],
+      "forbiddenReads": [
+        "{DATA}\\RUNTIME\\memory\\dreaming\\**"
+      ],
+      "enabled": true,
+      "createdAt": "2026-10-12T19:26:00+08:00",
+      "lastUpdated": "2026-10-12T19:26:00+08:00"
+    },
+    {
+      "id": "schedule-271c9c4e-d12a-4768-9565-bc5f9df36544",
+      "title": "{ASSISTANT}·Weekly Wiki",
+      "purpose": "每周日 22:00 提炼本周 daily 进 VAULT/",
+      "phase": "wiki",
+      "cron": "0 22 * * 0",
+      "time_zone": "Asia/Shanghai",
+      "promptFile": "RUNTIME/prompts/wiki.md",
+      "writesTo": [
+        "{DATA}\\VAULT\\0N-XXX\\*.md（更新）",
+        "{DATA}\\VAULT\\07-INDEX.md（更新）",
+        "{DATA}\\VAULT\\08-LOGS.md（追加）",
+        "{DATA}\\RUNTIME\\state\\last-wiki.json"
+      ],
+      "readsFrom": [
+        "{DATA}\\RAW\\conversations\\（最近 7 天）",
+        "{DATA}\\VAULT\\07-INDEX.md",
+        "{DATA}\\VAULT\\06-SCHEMA.md",
+        "{DATA}\\MEMORY\\wiki\\**（OpenClaw 时期素材，按需）"
+      ],
+      "forbiddenReads": [
+        "{DATA}\\RUNTIME\\memory\\dreaming\\**"
+      ],
+      "enabled": true,
+      "createdAt": "2026-10-12T19:26:00+08:00",
+      "lastUpdated": "2026-10-12T19:26:00+08:00"
+    },
+    {
+      "id": "schedule-032fd25c-2c24-4897-8876-623809a09776",
+      "title": "{ASSISTANT}·Weekly Lint",
+      "purpose": "每周日 22:30 vault 对齐检查",
+      "phase": "lint",
+      "cron": "30 22 * * 0",
+      "time_zone": "Asia/Shanghai",
+      "promptFile": "RUNTIME/prompts/lint.md",
+      "writesTo": [
+        "{DATA}\\VAULT\\07-INDEX.md（自动修复）",
+        "{DATA}\\VAULT\\08-LOGS.md（追加）",
+        "{DATA}\\RUNTIME\\state\\last-lint.json"
+      ],
+      "readsFrom": [
+        "{DATA}\\VAULT\\**",
+        "{DATA}\\RUNTIME\\state\\*.json",
+        "DSH schedule_list 工具（验证 4 phase 都在）"
+      ],
+      "forbiddenReads": [],
+      "enabled": true,
+      "createdAt": "2026-10-12T19:26:00+08:00",
+      "lastUpdated": "2026-10-12T19:26:00+08:00"
+    },
+    {
+      "id": "schedule-ccd8909a-5310-48f9-ab41-ec02f0e5a012",
+      "title": "{ASSISTANT}·5-day Reflect",
+      "purpose": "manas 末那识刷新 + 住相覆盖（cron 每天 00:00，节流层判真 5 天）",
+      "phase": "reflect",
+      "cron": "0 0 * * *",
+      "time_zone": "Asia/Shanghai",
+      "promptFile": "RUNTIME/prompts/reflect.md",
+      "writesTo": [
+        "{DATA}\\RUNTIME\\manas-system\\data\\manas\\YYYY-MM-DD.json",
+        "{DATA}\\SNAPSHOT_LATEST.md（覆盖）",
+        "{DATA}\\RUNTIME\\state\\last-reflect.json"
+      ],
+      "readsFrom": [
+        "{DATA}\\RAW\\conversations\\（最近 5 天）",
+        "{DATA}\\VAULT\\07-INDEX.md",
+        "{DATA}\\IDENTITY\\SOUL.md",
+        "{DATA}\\RUNTIME\\manas-system\\ALAYA.md",
+        "{DATA}\\RUNTIME\\manas-system\\data\\manas\\*.json（最近一份）",
+        "{DATA}\\SNAPSHOT_LATEST.md（上期住相）"
+      ],
+      "forbiddenReads": [],
+      "enabled": true,
+      "createdAt": "2026-10-12T19:26:00+08:00",
+      "lastUpdated": "2026-11-08T10:30:00+08:00"
+    }
+  ],
+  "plugins": [
+    {
+      "id": "doubao-proactive",
+      "name": "dsh-doubao-proactive",
+      "kind": "cordis-plugin",
+      "purpose": "主动找{USER}——沉默够久时在真 idle 状态开口（替代原 schedule 方案）",
+      "source": "{DATA}\\RUNTIME\\plugin\\dsh-doubao-proactive",
+      "installedVia": "dsh plugin --profile web add <path>",
+      "configSource": "C:\\Users\\ddt\\.dsh\\profiles\\web\\cordis.patch.yml（id: doubao-proactive）",
+      "writesTo": [
+        "{DATA}\\RUNTIME\\state\\proactive.json"
+      ],
+      "logicSource": "RUNTIME\\plugin\\dsh-doubao-proactive\\lib\\decide.js（判定）+ lib\\llm.js（生成）",
+      "humanReadableProtocol": "RUNTIME/prompts/proactive.md",
+      "designDoc": "{DATA}\\DESIGN\\PROACTIVE-PLUGIN-IMPLEMENTATION.md",
+      "enabled": true,
+      "installedAt": "2026-11-08T11:04:00+08:00",
+      "lastUpdated": "2026-11-08T22:10:00+08:00"
+    }
+  ],
+  "removedPhases": [
+    {
+      "phase": "dreaming light/REM/deep",
+      "removedAt": "2026-10-12c",
+      "reason": "DSH 0.2.2-rc.1 无原生 memory 协议（grep MEMORY.md 0 命中）；OpenClaw dreaming 三相在 DSH 不可行。DSH 自建版用 daily ingest + weekly wiki 替代。"
+    },
+    {
+      "phase": "weekly lint (旧版)",
+      "removedAt": "2026-10-12d",
+      "reason": "升级为 DSH 自建版 vault 巡检（lives in VAULT/08-LOGS.md）"
+    },
+    {
+      "phase": "proactive（schedule 版）",
+      "scheduleId": "schedule-dc24a474-09d4-4110-979f-250e1b760e8c",
+      "removedAt": "2026-11-08",
+      "reason": "cron \"*/13 * * * *\" 每 13 分钟灌一条 user message，会打断进行中的任务与对话（{USER} 2026-11-08 指出）。改为 dsh-doubao-proactive 插件：用 agent idle 状态 + runMaintenance 语义，只在会话真空闲时才评估，不占对话回合。"
+    }
+  ],
+  "notes": [
+    "id 为 null 表示尚未通过 schedule_create 实际注册。注册成功后由 schedule_list 反馈后回填。",
+    "任一 schedule 失效后，用 promptFile 全文重新 schedule_create。",
+    "DSH web 必须保持运行，所有 schedule 才能触发。",
+    "2026-10-12d：原 5 phase 缩减为 1 phase（reflect）。",
+    "2026-10-12e：豆姐式自建 LLM Wiki 路线落地——加回 3 个 phase（ingest / wiki / lint），总计 4 phase。manas 是灵魂（reflect），但人格维护需要周维度的提炼。",
+    "本 REGISTRY 是 schedule 调度的唯一真相源——删/改 phase 必先删 schedule（schedule_delete）再编辑此文件。",
+    "2026-10-12 19:26：4 个 schedule 全部注册成功（id 见上）。DSH Automation tasks bundle 已启用。",
+    "2026-11-08：phase 数从 5 降到 4（proactive 移出 schedule 层，改由 plugins 段托管）。schedule 仍是 4 个：ingest / wiki / lint / reflect。",
+    "2026-11-08：reflect 的 cron 由 \"0 0 */5 * *\" 改为 \"0 0 * * *\"——Vixie 的 */N 从该字段 min 开始步进，day-of-month 的 */5 = 1/6/11/16/21/26/31，不是每 5 天；真 5 天间隔改由 prompt 里的节流层判定。"
+  ]
+}

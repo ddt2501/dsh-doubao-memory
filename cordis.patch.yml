@@ -1,0 +1,19 @@
+# dsh-doubao-memory bundle patch.
+#
+# 该插件无 UI，纯运行时逻辑 + 数据目录。
+# 配置在 profile 的 cordis.patch.yml 里覆盖同名行：
+#
+#   - id: doubao-memory
+#     name: dsh-doubao-memory
+#     disabled: false
+#     config:
+#       proactive: { ... }     # 主动搭讪
+#       snapshot:  { ... }     # per-turn 住相
+#       memory:    { ... }     # LLM Wiki 四相 + manas 的 schedule 接线
+#
+# 路径默认相对包根（运行时穿 junction 指回真实目录），可用 dataRoot 覆盖。
+- insert:
+    - id: doubao-memory
+      name: dsh-doubao-memory
+      disabled: true
+      config: {}
